@@ -4,11 +4,12 @@ import sys
 import random
 import numpy as np
 
-import torch
-from torch.autograd import Variable as V
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
+
+#import torch
+#from torch.autograd import Variable as V
+#import torch.nn as nn
+#import torch.nn.functional as F
+#import torch.optim as optim
 
 def getFeatures(report_type,records):
     breast_records, behave_records = records
