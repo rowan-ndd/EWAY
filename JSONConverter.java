@@ -1,13 +1,18 @@
 import java.io.*;
 import java.util.*;
 
-// converts txt files to json files
-
-// still working to get HashMap version working as expected, but this one works
+// still working to get HashMap version working as expected, but this one mostly works
 public class JSONConverter {
 
 	public static void main(String[] args) throws FileNotFoundException {
-		File directory = new File("Test Data/Reports");
+		if (args.length != 2) {
+			System.out.println("Usage: enter input directory and output directory. Neither directory can have spaces in the name.");
+		}
+		
+		// read input directory and output directory from command line
+		String inputDirName = args[0];
+		File directory = new File(inputDirName);
+		String outputDirName = args[1];
 		
 		ArrayList<File> files; 
 		
@@ -27,8 +32,8 @@ public class JSONConverter {
 			convertFileToJson(f);
 			String extension = getFileExtension(f);
 			String fileName = f.getName();
-			String outputFile = fileName.substring(0, fileName.indexOf(extension)) + "temp";
-			addCommas(new File(outputFile));
+			String outputFile = "Temp/" + fileName.substring(0, fileName.indexOf(extension)) + "temp";
+			addCommas(new File(outputFile), outputDirName);
 		}
 		
 	}
@@ -63,8 +68,10 @@ public class JSONConverter {
 		String fileName = f.getName();
 		String extension = getFileExtension(f);
 		
+		File tempDir = createDirectory("Temp");
+		
 		// create new file with same name but the json extension. 
-		String outputName = f.getName().substring(0, fileName.indexOf(extension)) + "temp";
+		String outputName = tempDir + "/"  + f.getName().substring(0, fileName.indexOf(extension)) + "temp";
 		//String outputName2 = f.getName().substring(0, fileName.indexOf(extension)) + "2." + "json";
 		PrintStream ps = new PrintStream(new File(outputName));
 
@@ -150,13 +157,29 @@ public class JSONConverter {
 		input.close();
 	}
 	
+	// method to create a new directory if it doesn't exist
+		public static File createDirectory(String dirName) {
+			File dir = new File(dirName);
+			if (!dir.exists()) {
+				if (dir.mkdir()) {
+					
+				}
+				else {
+					System.out.println("Failed to create temp directory");
+				}
+			}
+			
+			return dir;
+		}
+	
 	// probably not the best way to do it, but got it adding the commas in the right way
-	public static void addCommas(File f) throws FileNotFoundException {
+	public static void addCommas(File f, String outputDir) throws FileNotFoundException {
 		Scanner input = new Scanner(f);
 		String extension = getFileExtension(f);
 		String name = f.getName();
 		String output = name.substring(0, name.indexOf(extension));
-		PrintStream ps = new PrintStream(output + "json");
+		File jsonDir = createDirectory(outputDir);
+		PrintStream ps = new PrintStream(jsonDir + "/" + output + "json");
 		ArrayList<String> lines = new ArrayList<String>();
 		while (input.hasNextLine()) {
 			String s = input.nextLine();
@@ -180,3 +203,7 @@ public class JSONConverter {
 	
 
 }
+
+
+
+

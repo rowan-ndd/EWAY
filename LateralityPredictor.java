@@ -9,20 +9,31 @@ public class LateralityPredictor {
 	// simple word counter that counts occurrences of left and right and determines laterality based on that
 
 	public static void main(String[] args) throws FileNotFoundException {
+		
+		if (args.length != 2) {
+			System.out.println("Usage: enter input directory and output directory. Neither directory can have spaces in the name.");
+		}
+		
+		// read input directory and output directory from command line
+		String inputDirName = args[0];
+		String outputDirName = args[1];
+		
 		// read in all files in the JSON folder, put them in an array list and predict left or right
-		File dir = new File("Test Data/JSON");
+		File dir = new File(inputDirName);
 		ArrayList<File> files = new ArrayList<File>(Arrays.asList(dir.listFiles()));
 		
 		for (File f : files) {
-			predictLeftOrRight(f);
+			predictLeftOrRight(f, outputDirName);
 		}
 	}
 	
-	public static void predictLeftOrRight(File f) throws FileNotFoundException {
+	// method to predict left or right. calls other methods to actually make the prediction
+	public static void predictLeftOrRight(File f, String outputDirName) throws FileNotFoundException {
 		
 		String fileName = f.getName();
 		String extension = getFileExtension(f);
-		String outputName = f.getName().substring(0, fileName.indexOf(extension) -1) + "_prediction.txt";
+		File outputDir = createDirectory(outputDirName);
+		String outputName = outputDir + "/" + f.getName().substring(0, fileName.indexOf(extension) -1) + "_prediction.txt";
 		PrintStream ps = new PrintStream(new File(outputName));
 		
 		
@@ -38,9 +49,7 @@ public class LateralityPredictor {
 				String laterality = getLaterality(text);
 				int[] counts = getLeftAndRightCounts(text);
 				outputLeftOrRight(patientId, counts, laterality, ps);
-				//outputLeftOrRight(patientId, text, ps);
 				patientId = s.substring(s.indexOf("\""), s.indexOf(":") +1);
-				//ps.print(patientId);
 				text = "";
 			}
 			
@@ -52,7 +61,6 @@ public class LateralityPredictor {
 		String laterality = getLaterality(text);
 		int[] counts = getLeftAndRightCounts(text);
 		outputLeftOrRight(patientId, counts, laterality, ps);
-		//outputLeftOrRight(patientId, text, ps);
 	}
 	
 	// method to go through the text for each patient and see if the laterality is indicated in there
@@ -112,6 +120,7 @@ public class LateralityPredictor {
 				
 	}
 	
+	// method to output the left or right counts to files
 	public static void outputLeftOrRight(String patientId, int[] counts, String laterality, PrintStream ps) {
 		
 		// first print the patient id
@@ -153,5 +162,20 @@ public class LateralityPredictor {
 		String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
 		return extension;
 	}
+	
+	// method to create a new directory if it doesn't exist
+		public static File createDirectory(String dirName) {
+			File dir = new File(dirName);
+			if (!dir.exists()) {
+				if (dir.mkdir()) {
+					
+				}
+				else {
+					System.out.println("Failed to create temp directory");
+				}
+			}
+			
+			return dir;
+		}
 
 }

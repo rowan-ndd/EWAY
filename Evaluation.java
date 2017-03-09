@@ -6,9 +6,16 @@ public class Evaluation {
 	
 	public static void main(String[] args) throws FileNotFoundException {
 		
+		if (args.length != 2) {
+			System.out.println("Usage: enter input predictions directory and input annotations directory. Neither directory can have spaces in the name.");
+		}
+		
+		String predictionsDir = args[0];
+		String annotationsDir = args[1];
+		
 		// load in the directories and store the files in array lists
-		File preds = new File("Test Data/Predictions");
-		File anns = new File ("Test Data/Annotations");
+		File preds = new File(predictionsDir);
+		File anns = new File (annotationsDir);
 		ArrayList<File> predFiles = new ArrayList<File>(Arrays.asList(preds.listFiles()));
 		ArrayList<File> annFiles = new ArrayList<File>(Arrays.asList(anns.listFiles()));
 		
@@ -38,7 +45,7 @@ public class Evaluation {
 	}
 	
 	// method to calculate the accuracy, precision, and recall
-	public static void calculateValues(int[] counts) {
+	public static void calculateValues(int[] counts) throws FileNotFoundException {
 		int lefttp = counts[0];
 		int lefttn = counts[1];
 		int leftfp = counts[2];
@@ -61,14 +68,16 @@ public class Evaluation {
 		double rightPrecision = 100.0 * righttp / (righttp + rightfp);
 		double rightRecall = 100.0 * righttp / (righttp + rightfn);
 		
-		System.out.println("Left:");
-		System.out.println("Accuracy: " + leftAccuracy);
-		System.out.println("Recall: " + leftRecall);
-		System.out.println("Precision: " + leftPrecision);
-		System.out.println("Right:");
-		System.out.println("Accuracy: " + rightAccuracy);
-		System.out.println("Recall: " + rightRecall);
-		System.out.println("Precision: " + rightPrecision);
+		PrintStream ps = new PrintStream(new File("LateralityEvaluation.txt"));
+		
+		ps.println("Left:");
+		ps.println("Accuracy: " + leftAccuracy);
+		ps.println("Recall: " + leftRecall);
+		ps.println("Precision: " + leftPrecision);
+		ps.println("Right:");
+		ps.println("Accuracy: " + rightAccuracy);
+		ps.println("Recall: " + rightRecall);
+		ps.println("Precision: " + rightPrecision);
 		
 	}
 	
